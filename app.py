@@ -19,7 +19,7 @@ while True:
         break
 
     # Run detection on frame
-    results: list[Results] = model(frame, conf=0.5, classes=[cell_phone_id])
+    results: list[Results] = model(frame, conf=0.7, classes=[cell_phone_id])
     annotated_frame = results[0].plot()
     cv2.imshow("YOLO Detection", annotated_frame)
 
