@@ -3,6 +3,7 @@ from ultralytics.engine.results import Results
 import cv2
 import logging
 from desktop_notifier import DesktopNotifierSync
+from datetime import datetime, timedelta
 
 logging.getLogger("ultralytics").setLevel(logging.WARNING)
 
@@ -10,6 +11,7 @@ model = YOLO("yolov10n.pt", verbose=False)
 cap = cv2.VideoCapture(0)  # Use 0 for default webcam
 notifier = DesktopNotifierSync()
 cell_phone_id = 67
+last_notified = None
 
 while True:
     ret, frame = cap.read()
@@ -26,11 +28,16 @@ while True:
         break
 
     for result in results:
-        if len(result.boxes) > 0:
-            notifier.send(
-                title="Stop! Get off that phone!",
-                message="I see you scrolling you sneaky bastard",
-            )
+        if last_notified is not None and datetime.now() < last_notified + timedelta(minutes=5):
+            break
+        if len(result.boxes) < 1:
+            break
+
+        last_notified = datetime.now()
+        notifier.send(
+            title="Stop! Get off that phone!",
+            message="I see you scrolling you sneaky bastard",
+        )
 
 
 cap.release()
